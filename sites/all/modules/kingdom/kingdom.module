@@ -165,12 +165,16 @@ function professions_form($form_state) {
 }
 
 function page_kingdom_knight() {
-  $result = db_query("SELECT name, fee, tithe FROM {knights}");
+  $result = db_query("SELECT name, fee, tithe, (select count(*) from {farmers} where farmers.knight_id=knights.id) as farmers FROM {knights}");
   $rows=array();
   while ($record = db_fetch_object($result)) {
-    $rows[]=array($record->name, $record->fee, $record->tithe);
+    $rows[]=array($record->name, $record->farmers, $record->fee, $record->tithe);
   }
-  $out .= theme_table(array("Рыцарь", "Жалование (%)", "Десятина (%)"), $rows);
+  if (count ($rows)) {
+    $out .= theme_table(array("Рыцарь", "Крестьян", "Жалование (%)", "Десятина (%)"), $rows);
+  } else {
+    $out .= "<h2>В данный момент в царстве совершенно нет рыцарей</h2>";
+  }
   $out .= "<h3>Добавьте нового рыцаря</h3>".drupal_get_form('knights_form');
   return $out;
 }
