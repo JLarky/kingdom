@@ -121,12 +121,16 @@ function kingdom_menu() {
 function page_kingdom() {
   $out = '<p>Добро пожаловать в королевство.</p>';
   // what day is today
-  $result = db_query("SELECT MAX(day) as max FROM {logs}");
-  $result = db_fetch_array($result);
-  $today = intval($result['max']);
-  $out .= t('<p>Дней с начала времён прошло: %day</p>', array("%day"=>$today));
+  $today = what_day_is_today();
+  $out .= t('<p>Дней с начала времён прошло: %day</p>', array("%day"=>$today-1));
   $out .= drupal_get_form('timetravel_form');
   return $out;
+}
+
+function what_day_is_today() {
+  $result = db_query("SELECT MAX(day) as max FROM {farmers}");
+  $result = db_fetch_array($result);
+  return max(1,intval($result['max']));
 }
 
 function timetravel_form($form_state) {
@@ -135,13 +139,80 @@ function timetravel_form($form_state) {
     '#title' => t('дней'),
     '#size' => 10,
     '#maxlength' => 10,
+    '#default_value' => 7,
   );
   $form['submit'] = array('#type' => 'submit', '#value' => t('Вперёд в будущее!'));
   return $form;
 }
 
 function timetravel_form_validate($form, &$form_state) {
-  drupal_set_message('sdfsdf');
+  $form_state['values']['days']=intval($form_state['values']['days']);
+  $days=$form_state['values']['days'];
+  if (! $days)
+    form_set_error('days', t('Слишком мало'));
+  if ($days > 1000)
+    form_set_error('days', t('Слишком много'));
+}
+
+function timetravel_form_submit($form, &$form_state) {
+  $days=$form_state['values']['days'];
+  // farmers
+  $farmers = array();
+  $result = db_query("SELECT * FROM {farmers}");
+  while ($row = db_fetch_array($result)) {
+    $farmers[]=$row;
+  }
+  // knights
+  global $knights;
+  $knights = array();
+  $result = db_query("SELECT * FROM {knights}");
+  while ($row = db_fetch_array($result)) {
+    $knights[$row['id']]=array('fee'=>$row['fee'], 'tithe' => $row['tithe']);
+  }
+  //jl_db($knights);
+  // professions
+  global $professions;
+  $professions = array();
+  $result = db_query("SELECT * FROM {professions}");
+  while ($row = db_fetch_array($result)) {
+    $professions[$row['id']]=array('price'=>$row['price']);
+  }
+  //jl_db($professions);
+  $last_day=what_day_is_today();
+  
+  for ($i=$last_day,$max_day=$last_day+$days; $i < $max_day; ++$i) {
+    //jl_db($i);
+    array_walk($farmers, 'iterate_farmers');
+    $day_of_month=fmod($i,30);
+    if ($day_of_month==0) { //end of month
+      array_walk($farmers, 'grab_farmers', $i);
+      //drupal_set_message($i);
+    }
+  }
+  array_walk($farmers, 'save_farmers', $i);
+}
+
+function iterate_farmers(&$elem) {
+  $elem['storehouse'] += rand(1,10);
+}
+
+function grab_farmers(&$elem, $i, $day) {
+  global $knights, $professions;
+  // собираем налоги, даём каждому по заслугам
+  $knight_id=$elem['knight_id'];
+  $profession_id = $elem['profession_id'];
+  $knight_income = $elem['storehouse']*$professions[$profession_id]['price'];
+  $incom_bishop = $knight_income*($knights[$knight_id]['tithe']/100);
+  $incom_king = $knight_income - $incom_bishop - $knight_income*($knights[$knight_id]['fee']/100);
+  db_query("INSERT INTO {logs} (day, knight_id, profession_id, incom_king, incom_bishop) VALUES (%d, %d, %d, %f, %f);",
+           $day, $knight_id, $profession_id, $incom_king, $incom_bishop);
+  $elem['storehouse'] = 0;
+}
+
+function save_farmers(&$elem, $i, $day) {
+  $elem['day']=$day;
+  db_query("UPDATE {farmers} SET storehouse=%d, day=%d WHERE id=%d", $elem['storehouse'], $elem['day'], $elem['id']);
+  //jl_db($elem);
 }
 
 function page_kingdom_professions() {

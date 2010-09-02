@@ -63,6 +63,11 @@ function kingdom_schema() {
 	'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0),
+      'day' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
     ),
     'primary key' => array('id'),
   );
