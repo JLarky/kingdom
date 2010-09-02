@@ -132,7 +132,7 @@ function professions_form_submit ($form, &$form_state) {
   $title=$form_state['values']['title'];
   $price=$form_state['values']['price'];
   db_query("INSERT INTO {professions} (price, title) VALUES (%d, '%s')", $price, $title);
-  drupal_set_message(t('Новый товар %s с ценой %d добавлен',$title, $price));
+  drupal_set_message(t('Новый товар %title с ценой %price добавлен', array('%title'=>$title, '%price'=>$price)));
 }
 
 function jl_db($var) {

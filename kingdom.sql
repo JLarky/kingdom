@@ -1009,7 +1009,7 @@ CREATE TABLE `professions` (
   `price` int(10) unsigned NOT NULL DEFAULT '0',
   `title` varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1018,7 +1018,7 @@ CREATE TABLE `professions` (
 
 LOCK TABLES `professions` WRITE;
 /*!40000 ALTER TABLE `professions` DISABLE KEYS */;
-INSERT INTO `professions` VALUES (1,15,'зерно');
+INSERT INTO `professions` VALUES (1,15,'зерно'),(2,15,'скот'),(3,30,'вино');
 /*!40000 ALTER TABLE `professions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1098,7 +1098,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES (1,'dnprvr1t8e2ppng72uf9ar5de7','217.197.6.21',1283431035,0,'');
+INSERT INTO `sessions` VALUES (1,'dnprvr1t8e2ppng72uf9ar5de7','217.197.6.21',1283431263,0,'');
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1335,7 +1335,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (0,'','','',0,0,0,'','',0,0,0,0,0,NULL,'','','',NULL),(1,'king','666230ff062adc25fb526e0b18a48182','jlarky@gmail.com',0,0,0,'','',0,1283423818,1283430907,1283423956,1,NULL,'','','jlarky@gmail.com','a:0:{}');
+INSERT INTO `users` VALUES (0,'','','',0,0,0,'','',0,0,0,0,0,NULL,'','','',NULL),(1,'king','666230ff062adc25fb526e0b18a48182','jlarky@gmail.com',0,0,0,'','',0,1283423818,1283431206,1283423956,1,NULL,'','','jlarky@gmail.com','a:0:{}');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1487,4 +1487,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-09-02 16:37:53
+-- Dump completed on 2010-09-02 16:41:23
