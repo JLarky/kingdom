@@ -228,7 +228,11 @@ function page_kingdom_professions() {
   while ($record = db_fetch_object($result)) {
     $rows[]=array($record->title, $record->price);
   }
-  $out .=   theme_table(array("Товар", "Цена"), $rows);
+  if (count($rows)) {
+    $out .=   theme_table(array("Товар", "Цена"), $rows);
+  } else {
+    $out .= "Пока нет ниодного товара";
+  }
   $out .= "<h3>Добавьте новый товар</h3>".drupal_get_form('professions_form');
   return $out;
 }
@@ -302,6 +306,12 @@ function knights_form_submit ($form, &$form_state) {
 }
 
 function knights_form_validate($form, &$form_state) {
+  global $professions;
+  get_all_professions();
+  if (! count($professions)) {
+    form_set_error('', "Нельзя добавлять рыцарей, пока его крестьяне ничего не умеют. Добавьте професси на ".l('этой страничке', 'kingdom/professions').".");
+  }
+
   $name=$form_state['values']['name'];
   if ( $name == '') {
     form_set_error('name', t('Имя рыцаря не должно быть пустым'));
