@@ -1,4 +1,4 @@
-
+<?php
 function kingdom_install() {
   // Create my tables.
   drupal_install_schema('kingdom');

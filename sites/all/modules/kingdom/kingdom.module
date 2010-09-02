@@ -119,7 +119,6 @@ function kingdom_menu() {
  * image or XML), you should print the content yourself and not return anything.
  */
 function page_kingdom() {
-	 var_dump(drupal_install_schema('kingdom'));
   return '<p>Добро пожаловать в королевство, тут всё будет. Не отчаивайтесь.</p>';
 }
 
