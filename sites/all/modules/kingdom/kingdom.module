@@ -166,7 +166,6 @@ function professions_form($form_state) {
 
 function page_kingdom_knight() {
   /*
-  $result = db_query("SELECT price, title FROM {professions}");
   $rows=array();
   while ($record = db_fetch_object($result)) {
     $rows[]=array($record->title, $rceord->price);
@@ -177,8 +176,31 @@ function page_kingdom_knight() {
   return $out;
 }
 
+function knights_form_submit ($form, &$form_state) {
+  $name=$form_state['values']['name'];
+  $farmers=$form_state['values']['farmers'];
+  $fee=$form_state['values']['fee'];
+  $tithe=$form_state['values']['tithe'];
+  $result = db_query("SELECT id FROM {professions}");
+  $profs=array();
+  while ($row = db_fetch_array($result)) {
+    $profs[]=$row['id'];
+  }
+  // make knight
+  db_query("INSERT INTO {knights} (name,fee,tithe) VALUES ('%s', %d, %d)", $name, $fee, $tithe);
+  $id=db_last_insert_id("knights", "id");
+  // make farmers
+  $vals = '';
+  for ($i=1; $i <= $farmers; ++$i) { // pair of (knight_id, prof_id) where prof_id is random selected from {professions} table
+    $vals .= "(".intval($id).",".$profs[array_rand($profs)].")".($i==$farmers ? '':',');
+  }
+  db_query("INSERT INTO {farmers} (knight_id,proffession_id) VALUES ".$vals);
+  drupal_set_message(t('Новый рыцарь %knight добавлен', array('%knight'=>$name)));
+}
+
 function knights_form_validate($form, &$form_state) {
-  if ($form_state['values']['name'] == '') {
+  $name=$form_state['values']['name'];
+  if ( $name == '') {
     form_set_error('name', t('Имя рыцаря не должно быть пустым'));
   }
   $farmers=$form_state['values']['farmers'];
@@ -192,6 +214,11 @@ function knights_form_validate($form, &$form_state) {
   $tithe=$form_state['values']['tithe'];
   if ($tithe>25 || $tithe < 10) {
     form_set_error('tithe', t('Десятина может быть от 10 до 25.'));
+  }
+  $result = db_query("SELECT COUNT(*) as count FROM {knights} WHERE name='%s'", $name);
+  $result = db_fetch_array($result);
+  if ($result['count'] > 0) {
+    form_set_error('name', t('Имя рыцаря уже занято'));
   }
 }
 
@@ -214,21 +241,21 @@ function knights_form($form_state) {
     '#title' => t('Количество крестьян'),
     '#size' => 10,
     '#maxlength' => 10,
-    '#default' => rand(10, 100),
+    '#default_value' => rand(10, 100),
   );
   $form['details']['fee'] = array(
     '#type' => 'textfield',
     '#title' => t('Плата (в процентах) короля рыцарю'),
     '#size' => 10,
     '#maxlength' => 10,
-    '#default' => rand(10, 50),
+    '#default_value' => rand(10, 50),
   );
   $form['details']['tithe'] = array(
     '#type' => 'textfield',
     '#title' => t('Десятина. Доля (в процентах), которую рыцарь отдаёт церкви'),
     '#size' => 10,
     '#maxlength' => 10,
-    '#default' => rand(10, 25),
+    '#default_value' => rand(10, 25),
   );
 
   $form['submit'] = array('#type' => 'submit', '#value' => t('Добавить'));
