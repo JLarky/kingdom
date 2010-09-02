@@ -122,6 +122,43 @@ function page_kingdom() {
   return '<p>Добро пожаловать в королевство, тут всё будет. Не отчаивайтесь.</p>';
 }
 
+function page_kingdom_professions() {
+  $out .= 'adfasdf';
+  $out .= "<h3>Добавьте новый товар</h3>".drupal_get_form('professions_form');
+  return $out;
+}
+
+function professions_form_submit ($form, &$form_state) {
+  $title=$form_state['values']['title'];
+  $price=$form_state['values']['price'];
+  db_query("INSERT INTO {professions} (price, title) VALUES (%d, '%s')", $price, $title);
+  drupal_set_message(t('Новый товар %s с ценой %d добавлен',$title, $price));
+}
+
+function jl_db($var) {
+  drupal_set_message("<pre>".print_r($var)."</pre>");
+}
+
+function professions_form($form_state) {
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('товар'),
+    '#size' => 30,
+    '#maxlength' => 64,
+    '#description' => t('Введите название товара'),
+  );
+  $form['price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('цена'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#description' => t('Введите цену товара ща условную единицу товара'),
+  );
+
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Добавить'));
+  return $form;
+}
+
 /*
 function kingdom_baz($alice, $bob) {
   // Make sure you don't trust the URL to be safe! Always check for threats.
