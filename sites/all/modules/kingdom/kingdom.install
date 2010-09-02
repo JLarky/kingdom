@@ -2,13 +2,11 @@
 function kingdom_install() {
   // Create my tables.
   drupal_install_schema('kingdom');
-  var_dump(123);
 }
 
 function kingdom_uninstall() {
   // Drop my tables.
   drupal_uninstall_schema('kingdom');
-  var_dump(5234);
 }
 
 
@@ -43,15 +41,84 @@ function kingdom_schema() {
       ),
     'primary key' => array('id'),
   );
-/*
+  // farmers: id (key), knight_id (int), proffession_id (int), storehouse (int)
   $schema['farmers'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'knight_id' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'proffession_id' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'storehouse' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+    ),
+    'primary key' => array('id'),
   );
+  // professions: id (key), price (int), title (str)
   $schema['professions'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'price' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'title' => array(
+        'type' => 'varchar',
+        'length' => 32,
+	'not null' => TRUE,
+        'default' => ''),
+    ),
+    'primary key' => array('id'),
   );
+  // logs: id (key), date (?), knight_id (int), profession_id (int), incom_king (float), incom_bishop (float)
   $schema['logs'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'day' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'knight_id' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'profession_id' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'incom_king' => array(
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0),
+      'incom_bishop' => array(
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0),
+    ),
+    'primary key' => array('id'),
   );
-  $schema['incom_king'] = array(
-  );
-*/
+
   return $schema;
 }
