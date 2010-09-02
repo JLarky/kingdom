@@ -372,6 +372,7 @@ function page_kingdom_stat() {
   while ($row = db_fetch_array($result)) {
     $stat[$row['day']][$row['knight_id']][$row['profession_id']]=$row;
   }
+  if (! count($stat)) return "Сбора налогов пока не проводилось, приходите позже.";
   global $knights, $professions;
   $out = '';
   $header=array('Рыцарь');
