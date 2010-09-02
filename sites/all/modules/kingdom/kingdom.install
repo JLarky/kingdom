@@ -1,0 +1,57 @@
+
+function kingdom_install() {
+  // Create my tables.
+  drupal_install_schema('kingdom');
+  var_dump(123);
+}
+
+function kingdom_uninstall() {
+  // Drop my tables.
+  drupal_uninstall_schema('kingdom');
+  var_dump(5234);
+}
+
+
+
+/* Scheme */
+
+function kingdom_schema() {
+  $schema['knights'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 32,
+	'not null' => TRUE,
+        'default' => ''),
+      'fee' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'tithe' => array(
+        'type' => 'int',
+	'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+    ),
+    'unique keys' => array(
+      'name' => array('name'),
+      ),
+    'primary key' => array('id'),
+  );
+/*
+  $schema['farmers'] = array(
+  );
+  $schema['professions'] = array(
+  );
+  $schema['logs'] = array(
+  );
+  $schema['incom_king'] = array(
+  );
+*/
+  return $schema;
+}
