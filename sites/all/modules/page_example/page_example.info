@@ -1,0 +1,5 @@
+; $Id$
+name = "Example page module"
+description = "Gives an example of a module."
+core = 6.x
+package = Test
