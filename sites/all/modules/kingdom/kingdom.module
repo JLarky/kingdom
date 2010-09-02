@@ -131,6 +131,8 @@ function page_kingdom() {
   $today = what_day_is_today();
   $out .= t('<p>Дней с начала времён прошло: %day</p>', array("%day"=>$today-1));
   $out .= drupal_get_form('timetravel_form');
+  $out .= "<h3>Нажми кнопку чтобы вернуться в начало</h3>";
+  $out .= drupal_get_form('kingdomreset_form');
   return $out;
 }
 
@@ -138,6 +140,17 @@ function what_day_is_today() {
   $result = db_query("SELECT MAX(day) as max FROM {farmers}");
   $result = db_fetch_array($result);
   return max(1,intval($result['max']));
+}
+
+function kingdomreset_form($form_state) {
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Назад в прошлое!'));
+  return $form;
+}
+
+function kingdomreset_form_submit($form, &$form_state) {
+  db_query("TRUNCATE TABLE {logs}");
+  db_query("UPDATE {farmers} SET storehouse=0, day=1");
+  drupal_set_message('Все товары и налоги забыты. Можно начинать сначала.');
 }
 
 function timetravel_form($form_state) {
@@ -373,9 +386,11 @@ function page_kingdom_stat() {
     $rows=array();
     foreach ($mstat as $knight => $kstat) {
       $tmp=array($knights[$knight]['name']);
-      foreach ($kstat as $prof => $pstat) {
-        $sum += $pstat['incom_king'];
-        $tmp[]=round($pstat['incom_king'],2);
+    //foreach ($kstat as $prof => $pstat) {
+      foreach ($professions as $p => $val) {
+        $incom = $kstat[$p]['incom_king'];
+        $sum += $incom;
+        $tmp[]=round($incom,2);
       }
       $rows[]=$tmp;
     }
