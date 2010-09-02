@@ -164,6 +164,77 @@ function professions_form($form_state) {
   return $form;
 }
 
+function page_kingdom_knight() {
+  /*
+  $result = db_query("SELECT price, title FROM {professions}");
+  $rows=array();
+  while ($record = db_fetch_object($result)) {
+    $rows[]=array($record->title, $rceord->price);
+  }
+  $out .=   theme_table(array("Товар", "Цена"), $rows);
+  */
+  $out .= "<h3>Добавьте нового рыцаря</h3>".drupal_get_form('knights_form');
+  return $out;
+}
+
+function knights_form_validate($form, &$form_state) {
+  if ($form_state['values']['name'] == '') {
+    form_set_error('name', t('Имя рыцаря не должно быть пустым'));
+  }
+  $farmers=$form_state['values']['farmers'];
+  if ($farmers>100 || $farmers < 10) {
+    form_set_error('farmers', t('Крестьян может быть от 10 до 100.'));
+  }
+  $fee=$form_state['values']['fee'];
+  if ($fee>50 || $fee < 10) {
+    form_set_error('fee', t('Плата может быть от 10 до 50.'));
+  }
+  $tithe=$form_state['values']['tithe'];
+  if ($tithe>25 || $tithe < 10) {
+    form_set_error('tithe', t('Десятина может быть от 10 до 25.'));
+  }
+}
+
+function knights_form($form_state) {
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Имя'),
+    '#size' => 30,
+    '#maxlength' => 64,
+    '#description' => t('Введите имя рыцаря (уникальное)'),
+  );
+  $form['details'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Дополнительно'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['details']['farmers'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Количество крестьян'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#default' => rand(10, 100),
+  );
+  $form['details']['fee'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Плата (в процентах) короля рыцарю'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#default' => rand(10, 50),
+  );
+  $form['details']['tithe'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Десятина. Доля (в процентах), которую рыцарь отдаёт церкви'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#default' => rand(10, 25),
+  );
+
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Добавить'));
+  return $form;
+}
+
 /*
 function kingdom_baz($alice, $bob) {
   // Make sure you don't trust the URL to be safe! Always check for threats.
