@@ -41,7 +41,7 @@ function kingdom_schema() {
       ),
     'primary key' => array('id'),
   );
-  // farmers: id (key), knight_id (int), proffession_id (int), storehouse (int)
+  // farmers: id (key), knight_id (int), profession_id (int), storehouse (int)
   $schema['farmers'] = array(
     'fields' => array(
       'id' => array(
@@ -53,7 +53,7 @@ function kingdom_schema() {
 	'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0),
-      'proffession_id' => array(
+      'profession_id' => array(
         'type' => 'int',
 	'unsigned' => TRUE,
         'not null' => TRUE,
