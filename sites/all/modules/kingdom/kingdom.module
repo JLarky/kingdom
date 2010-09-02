@@ -89,7 +89,7 @@ function kingdom_menu() {
     'page callback' => 'page_kingdom_professions',
     'access arguments' => array('rule kingdom'),
   );
-  // knigth's page
+  // knight's page
   $items['kingdom/knigths'] = array(
     'title' => 'Knigths manage page',
     'page callback' => 'page_kingdom_knight',
