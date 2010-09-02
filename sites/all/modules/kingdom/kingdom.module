@@ -95,6 +95,13 @@ function kingdom_menu() {
     'page callback' => 'page_kingdom_knight',
     'access arguments' => array('rule kingdom'),
   );
+  // stat page
+  $items['kingdom/stat'] = array(
+    'title' => 'Money stat page',
+    'page callback' => 'page_kingdom_stat',
+    'access arguments' => array('access kingdom'),
+  );
+
 
 /*  $items['example/baz/%/%'] = array(
     'title' => 'Baz',
@@ -162,24 +169,11 @@ function timetravel_form_submit($form, &$form_state) {
   while ($row = db_fetch_array($result)) {
     $farmers[]=$row;
   }
-  // knights
-  global $knights;
-  $knights = array();
-  $result = db_query("SELECT * FROM {knights}");
-  while ($row = db_fetch_array($result)) {
-    $knights[$row['id']]=array('fee'=>$row['fee'], 'tithe' => $row['tithe']);
-  }
-  //jl_db($knights);
-  // professions
-  global $professions;
-  $professions = array();
-  $result = db_query("SELECT * FROM {professions}");
-  while ($row = db_fetch_array($result)) {
-    $professions[$row['id']]=array('price'=>$row['price']);
-  }
-  //jl_db($professions);
+  get_all_knights();
+  get_all_professions();
+
   $last_day=what_day_is_today();
-  
+ 
   for ($i=$last_day,$max_day=$last_day+$days; $i < $max_day; ++$i) {
     //jl_db($i);
     array_walk($farmers, 'iterate_farmers');
@@ -358,6 +352,42 @@ function knights_form($form_state) {
   return $form;
 }
 
+function page_kingdom_stat() {
+  $result = db_query("SELECT SUM(incom_king) as incom_king, SUM(incom_bishop) as incom_bishop, knight_id, profession_id, day".
+                     " FROM {logs} GROUP BY knight_id, profession_id, day");
+  $stat=array();
+  while ($row = db_fetch_array($result)) {
+    $stat[$row['day']][$row['knight_id']][$row['profession_id']]=$row;
+  }
+  global $knights, $professions;
+  $out = '';
+  $header=array('Рыцарь');
+  get_all_knights();
+  get_all_professions();
+  foreach ($professions as $p) {
+    $header[]=$p['title'];
+  }
+  $prev_day=0;
+  foreach ($stat as $day => $mstat) {
+    $sum=0;
+    $rows=array();
+    foreach ($mstat as $knight => $kstat) {
+      $tmp=array($knights[$knight]['name']);
+      foreach ($kstat as $prof => $pstat) {
+        $sum += $pstat['incom_king'];
+        $tmp[]=round($pstat['incom_king'],2);
+      }
+      $rows[]=$tmp;
+    }
+    $out .= t("<h3>Доход короля за период %1 - %2: %sum</h3>", array('%1'=> $prev_day+1, '%2' => $day, '%sum' => round ($sum, 2)));
+    $out .= theme_table($header, $rows);
+    //var_dump($knights, $professions);
+    //var_dump($mstat);
+    $prev_day=$day;
+  }
+  return $out;
+}
+
 /*
 function kingdom_baz($alice, $bob) {
   // Make sure you don't trust the URL to be safe! Always check for threats.
@@ -374,4 +404,24 @@ function kingdom_baz($alice, $bob) {
 }
 */
 
+/* UTILS */
 
+function get_all_knights(){
+  global $knights;
+  $knights = array();
+  $result = db_query("SELECT * FROM {knights}");
+  while ($row = db_fetch_array($result)) {
+    $knights[$row['id']]=array('fee'=>$row['fee'], 'tithe' => $row['tithe'], 'name' => $row['name']);
+  }
+  //jl_db($knights);
+}
+
+function get_all_professions(){
+  global $professions;
+  $professions = array();
+  $result = db_query("SELECT * FROM {professions}");
+  while ($row = db_fetch_array($result)) {
+    $professions[$row['id']]=array('price'=>$row['price'], 'title' => $row['title']);
+  }
+  //jl_db($professions);
+}
