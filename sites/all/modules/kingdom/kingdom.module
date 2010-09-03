@@ -90,8 +90,8 @@ function kingdom_menu() {
     'access arguments' => array('rule kingdom'),
   );
   // knight's page
-  $items['kingdom/knigths'] = array(
-    'title' => 'Knigths manage page',
+  $items['kingdom/knights'] = array(
+    'title' => 'Knights manage page',
     'page callback' => 'page_kingdom_knight',
     'access arguments' => array('rule kingdom'),
   );
@@ -166,6 +166,12 @@ function timetravel_form($form_state) {
 }
 
 function timetravel_form_validate($form, &$form_state) {
+  global $knights;
+  get_all_knights();
+  if (! count($knights)) {
+    form_set_error('', "Нельзя считать урожай и собирать налоги, пока в стране нет рыцарей. Добавьте рыцарей на ".l('этой страничке', 'kingdom/knights').".");
+  }
+
   $form_state['values']['days']=intval($form_state['values']['days']);
   $days=$form_state['values']['days'];
   if (! $days)
